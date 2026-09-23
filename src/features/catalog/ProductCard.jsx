@@ -1,5 +1,6 @@
+// src/features/catalog/ProductCard.jsx
 import { motion } from "framer-motion";
-import { ShoppingBag, MessageCircle } from "lucide-react";
+import { ShoppingBag, MessageCircle, Palette } from "lucide-react";
 
 export default function ProductCard({ prod, onViewDetails, onQuote }) {
   const fadeInUp = {
@@ -11,6 +12,12 @@ export default function ProductCard({ prod, onViewDetails, onQuote }) {
     },
   };
 
+  // Obtener el nombre de la categoría (puede venir como objeto anidado o null)
+  const categoriaNombre = prod.categorias?.nombre || "Sin categoría";
+
+  // Acortar el ID para mostrarlo (los UUID son muy largos)
+  const shortId = prod.id.substring(0, 8).toUpperCase();
+
   return (
     <motion.div
       variants={fadeInUp}
@@ -20,9 +27,20 @@ export default function ProductCard({ prod, onViewDetails, onQuote }) {
       }}
       className="bg-white/80 backdrop-blur-sm rounded-3xl p-5 shadow-lg border-2 border-pink-100 flex flex-col relative overflow-hidden transition-all duration-300"
     >
-      <div className="w-full h-52 bg-pink-50/50 rounded-2xl mb-4 border-2 border-dashed border-pink-200 flex flex-col items-center justify-center text-pink-300">
-        <ShoppingBag size={48} className="mb-2" />
-        <span className="text-sm font-semibold">Foto del producto</span>
+      {/* Espacio para la foto real */}
+      <div className="w-full h-52 bg-pink-50/50 rounded-2xl mb-4 border-2 border-dashed border-pink-200 flex flex-col items-center justify-center text-pink-300 overflow-hidden">
+        {prod.image_url ? (
+          <img
+            src={prod.image_url}
+            alt={prod.nombre}
+            className="w-full h-full object-cover rounded-2xl"
+          />
+        ) : (
+          <>
+            <ShoppingBag size={48} className="mb-2" />
+            <span className="text-sm font-semibold">Foto próximamente</span>
+          </>
+        )}
       </div>
 
       <div className="flex justify-between items-start mb-2">
@@ -30,7 +48,7 @@ export default function ProductCard({ prod, onViewDetails, onQuote }) {
           {prod.nombre}
         </h3>
         <span className="text-xs bg-pink-100 text-pink-500 px-2 py-1 rounded-full font-bold whitespace-nowrap ml-2">
-          ID: {prod.id}
+          #{shortId}
         </span>
       </div>
 
@@ -38,8 +56,13 @@ export default function ProductCard({ prod, onViewDetails, onQuote }) {
         {prod.descripcion}
       </p>
       <span className="text-xs font-bold text-pink-400 mb-4 uppercase tracking-wider">
-        {prod.categoria}
+        {categoriaNombre}
       </span>
+      {prod.precio && (
+        <p className="text-lg font-bold text-pink-500 mb-3">
+          S/ {parseFloat(prod.precio).toFixed(2)}
+        </p>
+      )}
 
       <div className="flex items-center gap-2 mb-4 bg-pink-50/50 w-fit px-3 py-1 rounded-full border border-pink-100/50">
         <div

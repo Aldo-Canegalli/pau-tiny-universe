@@ -1,8 +1,8 @@
 node_modules
 dist
 .env
-.DS_Store
-# Variables de entorno
-
 .env.local
 .env.*.local
+.DS_Store
+.vscode
+.idea

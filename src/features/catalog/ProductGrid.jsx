@@ -1,3 +1,4 @@
+// src/features/catalog/ProductGrid.jsx
 import { motion } from "framer-motion";
 import ProductCard from "./ProductCard";
 
@@ -13,18 +14,27 @@ export default function ProductGrid({
 
   if (productosFiltrados.length === 0) {
     return (
-      <motion.p
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="text-center text-lg bg-white/60 backdrop-blur-sm p-10 rounded-3xl border-2 border-dashed border-pink-200"
+        className="text-center bg-white/60 backdrop-blur-sm p-12 rounded-3xl border-2 border-dashed border-pink-200"
       >
-        No hay productos en esta categoría aún. 🧶
-      </motion.p>
+        <div className="text-6xl mb-4">🧶</div>
+        <p className="text-lg font-semibold text-pauBrown/70 mb-2">
+          No encontramos productos
+        </p>
+        <p className="text-sm text-pauBrown/50">
+          Prueba con otra búsqueda o categoría
+        </p>
+      </motion.div>
     );
   }
 
+  const gridKey = productosFiltrados.map((p) => p.id).join("-");
+
   return (
     <motion.div
+      key={gridKey}
       variants={staggerContainer}
       initial="hidden"
       whileInView="visible"
