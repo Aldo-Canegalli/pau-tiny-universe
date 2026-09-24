@@ -16,7 +16,7 @@ const initialForm = {
   colores: [],
   medidas: "",
   hilo: "",
-  aguja: "",
+  tiempo_estimado: "",
   image_url: "",
 };
 
@@ -44,7 +44,7 @@ export default function ProductFormModal({
         colores: product.colores || [],
         medidas: product.medidas || "",
         hilo: product.hilo || "",
-        aguja: product.aguja || "",
+        tiempo_estimado: product.tiempo_estimado || "",
         image_url: product.image_url || "",
       });
     } else {
@@ -265,13 +265,23 @@ export default function ProductFormModal({
             onChange={handleChange}
             placeholder="Ej: Algodón"
           />
-          <Input
-            label="Tipo de aguja"
-            name="aguja"
-            value={form.aguja}
-            onChange={handleChange}
-            placeholder="Ej: 2.5 mm"
-          />
+          <div className="min-w-0">
+            <label className="block text-sm font-semibold text-pauBrown mb-2">
+              Tiempo estimado
+            </label>
+            <input
+              type="text"
+              name="tiempo_estimado"
+              value={form.tiempo_estimado}
+              onChange={handleChange}
+              placeholder="Ej: 5 días hábiles"
+              className="w-full px-4 py-2.5 rounded-xl border-2 border-pink-100 focus:border-pink-400 focus:outline-none bg-white/80 transition-colors"
+            />
+            <p className="text-xs text-pauBrown/50 mt-1.5 italic">
+              (En caso de no tener stock del producto, este es el tiempo
+              estimado)
+            </p>
+          </div>
         </div>
 
         <div className="flex items-center gap-2 bg-pink-50/50 p-3 rounded-xl">

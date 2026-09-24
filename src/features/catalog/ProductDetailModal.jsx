@@ -55,9 +55,15 @@ export default function ProductDetailModal({ producto, onClose, onQuote }) {
             <strong>🧶 Tipo de hilo:</strong> {producto.hilo}
           </p>
         )}
-        {producto.aguja && (
-          <p className="text-sm flex items-center gap-2">
-            <strong>🪡 Tipo de aguja:</strong> {producto.aguja}
+        {producto.tiempo_estimado && (
+          <p className="text-sm flex items-start gap-2">
+            <strong>⏱️ Tiempo estimado:</strong>
+            <span className="flex-1">
+              {producto.tiempo_estimado}
+              <span className="block text-xs text-pauBrown/50 mt-0.5 italic">
+                (En caso de no tener stock)
+              </span>
+            </span>
           </p>
         )}
         {producto.precio && (
