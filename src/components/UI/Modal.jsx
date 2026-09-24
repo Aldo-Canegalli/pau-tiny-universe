@@ -1,5 +1,7 @@
 // src/components/UI/Modal.jsx
-import { motion } from "framer-motion";
+import { useEffect } from "react";
+import { createPortal } from "react-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 
 export default function Modal({
@@ -9,28 +11,74 @@ export default function Modal({
   children,
   maxWidth = "max-w-lg",
 }) {
-  if (!isOpen) return null;
+  // Bloquear el scroll del body cuando el modal está abierto
+  useEffect(() => {
+    if (isOpen) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [isOpen]);
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 backdrop-blur-sm">
-      <motion.div
-        initial={{ scale: 0.9, opacity: 0, y: 20 }}
-        animate={{ scale: 1, opacity: 1, y: 0 }}
-        className={`bg-white/95 backdrop-blur-md rounded-3xl p-6 md:p-8 ${maxWidth} w-full shadow-2xl border-4 border-pink-100 relative max-h-[90vh] overflow-y-auto`}
-      >
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-pink-400 hover:text-pink-600 bg-pink-50 hover:bg-pink-100 rounded-full p-1.5 transition-colors z-10"
+  // Cerrar con la tecla Escape
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === "Escape" && isOpen) onClose();
+    };
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, [isOpen, onClose]);
+
+  // 🚀 Renderizar el modal directamente en document.body con Portal
+  const modalContent = (
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-2 md:p-4 bg-black/40 backdrop-blur-sm"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) onClose();
+          }}
         >
-          <X size={20} />
-        </button>
-        {title && (
-          <h3 className="text-2xl font-bold text-pink-500 mb-6 pr-8">
-            {title}
-          </h3>
-        )}
-        {children}
-      </motion.div>
-    </div>
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+            transition={{ type: "spring", duration: 0.4 }}
+            className={`bg-white/95 backdrop-blur-md rounded-3xl ${maxWidth} w-full shadow-2xl border-4 border-pink-100 relative flex flex-col max-h-[95vh] md:max-h-[90vh]`}
+          >
+            {/* Header sticky con título y botón X */}
+            <div className="flex items-start justify-between gap-3 p-5 md:p-6 pb-3 md:pb-4 border-b border-pink-100 flex-shrink-0">
+              {title && (
+                <h3 className="text-xl md:text-2xl font-bold text-pink-500 pr-2 leading-tight">
+                  {title}
+                </h3>
+              )}
+              <button
+                onClick={onClose}
+                className="text-pink-400 hover:text-pink-600 bg-pink-50 hover:bg-pink-100 rounded-full p-2 transition-colors shadow-sm flex-shrink-0"
+                aria-label="Cerrar"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Cuerpo con scroll interno */}
+            <div className="overflow-y-auto p-5 md:p-6 pt-4 md:pt-5 flex-1">
+              {children}
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
+
+  // Si no hay document (SSR safety), no renderizamos
+  if (typeof document === "undefined") return null;
+
+  return createPortal(modalContent, document.body);
 }
