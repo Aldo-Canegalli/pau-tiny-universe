@@ -37,10 +37,11 @@ export default function PublicCatalogPage({ categoriaFiltro }) {
   const cotizarWhatsApp = (producto, modificaciones = null) => {
     let mensaje = `¡Hola Pau! Me encantaría cotizar el producto: *${producto.nombre}* (ID: #${producto.id.substring(0, 8).toUpperCase()}).`;
 
-    if (producto.personalizable && modificaciones) {
-      mensaje += `\n\n🎨 *Personalización:*`;
-      if (modificaciones.color)
-        mensaje += `\n- Color elegido: ${modificaciones.color}`;
+    if (producto.personalizable && modificaciones?.opciones?.length > 0) {
+      mensaje += `\n\n✨ *Personalización elegida:*`;
+      modificaciones.opciones.forEach((opcion) => {
+        mensaje += `\n- ${opcion}`;
+      });
     }
 
     mensaje += `\n\n¿Me podrías dar más información? ✨`;

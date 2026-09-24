@@ -13,7 +13,7 @@ const initialForm = {
   precio: "",
   categoria_id: "",
   personalizable: false,
-  colores: [],
+  opciones_personalizacion: [],
   medidas: "",
   hilo: "",
   tiempo_estimado: "",
@@ -28,7 +28,7 @@ export default function ProductFormModal({
   categories,
 }) {
   const [form, setForm] = useState(initialForm);
-  const [colorInput, setColorInput] = useState("");
+  const [opcionInput, setOpcionInput] = useState("");
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState("");
   const { uploadImage, uploading } = useImageUpload();
@@ -41,7 +41,7 @@ export default function ProductFormModal({
         precio: product.precio || "",
         categoria_id: product.categoria_id || "",
         personalizable: product.personalizable || false,
-        colores: product.colores || [],
+        opciones_personalizacion: product.opciones_personalizacion || [],
         medidas: product.medidas || "",
         hilo: product.hilo || "",
         tiempo_estimado: product.tiempo_estimado || "",
@@ -61,20 +61,28 @@ export default function ProductFormModal({
     }));
   };
 
-  const handleAddColor = () => {
-    if (colorInput.trim() && !form.colores.includes(colorInput.trim())) {
+  const handleAddOpcion = () => {
+    if (
+      opcionInput.trim() &&
+      !form.opciones_personalizacion.includes(opcionInput.trim())
+    ) {
       setForm((prev) => ({
         ...prev,
-        colores: [...prev.colores, colorInput.trim()],
+        opciones_personalizacion: [
+          ...prev.opciones_personalizacion,
+          opcionInput.trim(),
+        ],
       }));
-      setColorInput("");
+      setOpcionInput("");
     }
   };
 
-  const handleRemoveColor = (color) => {
+  const handleRemoveOpcion = (opcion) => {
     setForm((prev) => ({
       ...prev,
-      colores: prev.colores.filter((c) => c !== color),
+      opciones_personalizacion: prev.opciones_personalizacion.filter(
+        (o) => o !== opcion,
+      ),
     }));
   };
 
@@ -304,37 +312,40 @@ export default function ProductFormModal({
         {form.personalizable && (
           <div className="bg-pink-50/50 p-4 rounded-xl">
             <label className="block text-sm font-semibold text-pauBrown mb-2">
-              Colores disponibles
+              Opciones de personalización
             </label>
+            <p className="text-xs text-pauBrown/50 mb-3 italic">
+              Ej: "1 rosa", "3 rosas", "Ramo grande", "Con mensaje", etc.
+            </p>
             <div className="flex gap-2 mb-3">
               <input
                 type="text"
-                value={colorInput}
-                onChange={(e) => setColorInput(e.target.value)}
+                value={opcionInput}
+                onChange={(e) => setOpcionInput(e.target.value)}
                 onKeyPress={(e) =>
-                  e.key === "Enter" && (e.preventDefault(), handleAddColor())
+                  e.key === "Enter" && (e.preventDefault(), handleAddOpcion())
                 }
-                placeholder="Ej: Rosa Pastel"
+                placeholder="Ej: 1 rosa"
                 className="flex-1 px-3 py-2 rounded-xl border-2 border-pink-100 focus:border-pink-400 focus:outline-none bg-white/80"
               />
               <Button
                 type="button"
                 variant="secondary"
-                onClick={handleAddColor}
+                onClick={handleAddOpcion}
               >
                 Añadir
               </Button>
             </div>
             <div className="flex flex-wrap gap-2">
-              {form.colores.map((color) => (
+              {form.opciones_personalizacion.map((opcion) => (
                 <span
-                  key={color}
+                  key={opcion}
                   className="bg-white border border-pink-200 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-2"
                 >
-                  {color}
+                  {opcion}
                   <button
                     type="button"
-                    onClick={() => handleRemoveColor(color)}
+                    onClick={() => handleRemoveOpcion(opcion)}
                     className="text-red-400 hover:text-red-600"
                   >
                     <X size={12} />

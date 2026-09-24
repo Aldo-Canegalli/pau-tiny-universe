@@ -1,23 +1,39 @@
 // src/features/catalog/ProductDetailModal.jsx
 import { useState } from "react";
-import { MessageCircle, Palette } from "lucide-react";
+import { MessageCircle, Sparkles, Check } from "lucide-react";
 import Modal from "../../components/UI/Modal";
 
 export default function ProductDetailModal({ producto, onClose, onQuote }) {
-  const [colorSeleccionado, setColorSeleccionado] = useState("");
+  const [opcionesSeleccionadas, setOpcionesSeleccionadas] = useState([]);
 
   if (!producto) return null;
 
   const shortId = producto.id.substring(0, 8).toUpperCase();
+  const opciones = producto.opciones_personalizacion || [];
+
+  // Toggle: si ya está seleccionada, la quita; si no, la agrega
+  const toggleOpcion = (opcion) => {
+    setOpcionesSeleccionadas((prev) =>
+      prev.includes(opcion)
+        ? prev.filter((o) => o !== opcion)
+        : [...prev, opcion],
+    );
+  };
 
   const handleQuote = () => {
-    onQuote(producto, { color: colorSeleccionado });
+    onQuote(producto, { opciones: opcionesSeleccionadas });
+  };
+
+  // Resetear la selección al cerrar
+  const handleClose = () => {
+    setOpcionesSeleccionadas([]);
+    onClose();
   };
 
   return (
     <Modal
       isOpen={!!producto}
-      onClose={onClose}
+      onClose={handleClose}
       title={producto.nombre}
       maxWidth="max-w-md"
     >
@@ -74,27 +90,43 @@ export default function ProductDetailModal({ producto, onClose, onQuote }) {
         )}
       </div>
 
-      {/* Colores personalizables */}
-      {producto.personalizable && producto.colores?.length > 0 && (
+      {/* Opciones de personalización (selección múltiple) */}
+      {producto.personalizable && opciones.length > 0 && (
         <div className="mb-6">
-          <p className="text-sm font-bold mb-3 flex items-center gap-2">
-            <Palette size={16} /> Elige un color para personalizar:
+          <p className="text-sm font-bold mb-1 flex items-center gap-2">
+            <Sparkles size={16} className="text-pink-400" />
+            Elige tus opciones de personalización:
+          </p>
+          <p className="text-xs text-pauBrown/50 mb-3 italic">
+            Puedes seleccionar varias
           </p>
           <div className="flex flex-wrap gap-2">
-            {producto.colores.map((color) => (
-              <button
-                key={color}
-                onClick={() => setColorSeleccionado(color)}
-                className={`text-xs px-3 py-1.5 rounded-full shadow-sm font-semibold border-2 transition-all ${
-                  colorSeleccionado === color
-                    ? "bg-pink-400 text-white border-pink-500 scale-105"
-                    : "bg-white border-pink-200 text-pauBrown hover:border-pink-400"
-                }`}
-              >
-                {color}
-              </button>
-            ))}
+            {opciones.map((opcion) => {
+              const isSelected = opcionesSeleccionadas.includes(opcion);
+              return (
+                <button
+                  key={opcion}
+                  onClick={() => toggleOpcion(opcion)}
+                  className={`text-xs px-3 py-2 rounded-full shadow-sm font-semibold border-2 transition-all flex items-center gap-1.5 ${
+                    isSelected
+                      ? "bg-pink-400 text-white border-pink-500 scale-105"
+                      : "bg-white border-pink-200 text-pauBrown hover:border-pink-400"
+                  }`}
+                >
+                  {isSelected && <Check size={12} />}
+                  {opcion}
+                </button>
+              );
+            })}
           </div>
+          {opcionesSeleccionadas.length > 0 && (
+            <p className="text-xs text-pink-500 mt-3 font-semibold">
+              ✓ {opcionesSeleccionadas.length}{" "}
+              {opcionesSeleccionadas.length === 1
+                ? "opción seleccionada"
+                : "opciones seleccionadas"}
+            </p>
+          )}
         </div>
       )}
 

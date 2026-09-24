@@ -14,7 +14,7 @@ export const useProducts = () => {
       .from("productos")
       .select(
         `
-        id, nombre, descripcion, precio, image_url, personalizable, colores,
+        id, nombre, descripcion, precio, image_url, personalizable, opciones_personalizacion,
         medidas, hilo, tiempo_estimado, created_at, categoria_id,
         categorias (id, nombre)
       `,
